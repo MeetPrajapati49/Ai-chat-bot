@@ -11,7 +11,9 @@ const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY
 })
 
-app.use(cors())
+app.use(cors({
+  origin: 'https://ai-chat-bot-omega-snowy.vercel.app'
+}))
 app.use(express.json())
 
 // Test route
