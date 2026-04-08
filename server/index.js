@@ -4,7 +4,7 @@ require('dotenv').config()
 const Groq = require('groq-sdk')
 
 const app = express()
-const PORT = 3000
+const PORT = process.env.PORT || 3000
 
 // Initialize Groq with your API key from .env
 const groq = new Groq({
