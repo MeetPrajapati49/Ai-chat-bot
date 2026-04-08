@@ -12,7 +12,10 @@ const groq = new Groq({
 })
 
 app.use(cors({
-  origin: 'https://ai-chat-bot-omega-snowy.vercel.app'
+  origin: 'https://ai-chat-bot-omega-snowy.vercel.app',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
 }))
 app.use(express.json())
 
