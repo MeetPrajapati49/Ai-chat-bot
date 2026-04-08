@@ -34,7 +34,7 @@ function App() {
     setIsLoading(true)
 
     try {
-      const response = await fetch('http://localhost:3000/chat', {
+      const response = await fetch('https://ai-chat-bot-s0kg.onrender.com/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -58,11 +58,11 @@ function App() {
           : chat
       ))
       // Auto title the chat with first message
-setChats(prev => prev.map(chat =>
-  chat.id === activeChatId && chat.title === "New Chat"
-    ? { ...chat, title: text.slice(0, 25) }
-    : chat
-))
+      setChats(prev => prev.map(chat =>
+        chat.id === activeChatId && chat.title === "New Chat"
+          ? { ...chat, title: text.slice(0, 25) }
+          : chat
+      ))
 
     } catch (error) {
       console.error('Error:', error)
