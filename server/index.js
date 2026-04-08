@@ -13,7 +13,7 @@ const groq = new Groq({
 app.use(cors())
 app.use(express.json())
 
-app.options('*', cors())
+app.options('/(.*)', cors())
 
 app.get('/', (req, res) => {
   res.json({ message: 'NeuraChat server is running! 🚀' })
