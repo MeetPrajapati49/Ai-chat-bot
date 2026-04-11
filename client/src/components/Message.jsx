@@ -1,7 +1,9 @@
+import ReactMarkdown from 'react-markdown'
+
 function Message({ text, isUser }) {
   return (
     <div className={isUser ? "message user" : "message ai"}>
-      <p>{text}</p>
+      <ReactMarkdown>{text}</ReactMarkdown>
     </div>
   )
 }

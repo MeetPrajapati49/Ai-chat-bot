@@ -1,9 +1,11 @@
+import { Routes, Route } from 'react-router-dom'
 import { useState } from 'react'
+import Landing from './pages/Landing'
 import Sidebar from './components/Sidebar'
 import ChatArea from './components/Chatarea'
 import InputBox from './components/InputBox'
 
-function App() {
+function Chat() {
   const [chats, setChats] = useState([
     {
       id: 1,
@@ -15,55 +17,99 @@ function App() {
   ])
   const [activeChatId, setActiveChatId] = useState(1)
   const [isLoading, setIsLoading] = useState(false)
+  const [fileContext, setFileContext] = useState(null)
 
-  // Get current active chat
   const activeChat = chats.find(c => c.id === activeChatId)
   const messages = activeChat ? activeChat.messages : []
 
-  // Add message to active chat
-  async function addMessage(text) {
-    const userMessage = { id: Date.now(), text: text, isUser: true }
+  async function addMessage(text, file) {
+    let fileContent = null
+    let fileType = null
 
-    // Add user message to active chat
+    if (file) {
+      fileType = file.type
+      if (file.type === 'application/pdf') {
+        const pdfjsLib = await import('pdfjs-dist')
+        pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+          'pdfjs-dist/build/pdf.worker.min.mjs',
+          import.meta.url
+        ).toString()
+        const arrayBuffer = await file.arrayBuffer()
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise
+        let pdfText = ''
+        for (let i = 1; i <= pdf.numPages; i++) {
+          const page = await pdf.getPage(i)
+          const content = await page.getTextContent()
+          pdfText += content.items.map(item => item.str).join(' ')
+        }
+        fileContent = pdfText
+        setFileContext(pdfText)
+      } else if (file.type.startsWith('image/')) {
+        const reader = new FileReader()
+        fileContent = await new Promise((resolve) => {
+          reader.onload = (e) => resolve(e.target.result.split(',')[1])
+          reader.readAsDataURL(file)
+        })
+      }
+    }
+
+    const userMessage = {
+      id: Date.now(),
+      text: text || (file ? `📎 ${file.name}` : ''),
+      isUser: true
+    }
+
     setChats(prev => prev.map(chat =>
       chat.id === activeChatId
-        ? { ...chat, messages: [...chat.messages, userMessage] }
+        ? {
+            ...chat,
+            title: chat.title === "New Chat" ? (text || file?.name || 'New Chat').slice(0, 25) : chat.title,
+            messages: [...chat.messages, userMessage]
+          }
         : chat
     ))
 
     setIsLoading(true)
 
     try {
-      const response = await fetch('https://ai-chat-bot-s0kg.onrender.com/chat', {
+      // Build messages for Groq
+      let groqMessages = [
+        ...messages.map(msg => ({
+          role: msg.isUser ? 'user' : 'assistant',
+          content: msg.text
+        }))
+      ]
+
+      // Build the last user message with file context
+      let lastContent = text || 'Please analyze this file'
+
+      if (fileContent) {
+        // Fresh file uploaded
+        lastContent = `${lastContent}\n\nDocument content:\n${fileContent}`
+      } else if (fileContext) {
+        // Use remembered file context
+        lastContent = `${lastContent}\n\nContext from previously uploaded document:\n${fileContext}`
+      }
+
+      groqMessages.push({ role: 'user', content: lastContent })
+
+      const response = await fetch('http://localhost:3000/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          messages: [
-            ...messages.map(msg => ({
-              role: msg.isUser ? 'user' : 'assistant',
-              content: msg.text
-            })),
-            { role: 'user', content: text }
-          ]
+          messages: groqMessages,
+          fileContent,
+          fileType
         })
       })
 
       const data = await response.json()
       const aiMessage = { id: Date.now() + 1, text: data.message, isUser: false }
-
-      // Add AI message to active chat
       setChats(prev => prev.map(chat =>
         chat.id === activeChatId
           ? { ...chat, messages: [...chat.messages, aiMessage] }
           : chat
       ))
-      // Auto title the chat with first message
-      setChats(prev => prev.map(chat =>
-        chat.id === activeChatId && chat.title === "New Chat"
-          ? { ...chat, title: text.slice(0, 25) }
-          : chat
-      ))
-
     } catch (error) {
       console.error('Error:', error)
     } finally {
@@ -71,22 +117,15 @@ function App() {
     }
   }
 
-  // Create new chat
   function createNewChat() {
     const newChat = {
       id: Date.now(),
       title: "New Chat",
-      messages: [
-        { id: Date.now(), text: "Hello! How can I help you?", isUser: false }
-      ]
+      messages: [{ id: Date.now(), text: "Hello! How can I help you?", isUser: false }]
     }
     setChats(prev => [...prev, newChat])
     setActiveChatId(newChat.id)
-  }
-
-  // Switch to a chat
-  function switchChat(chatId) {
-    setActiveChatId(chatId)
+    setFileContext(null)
   }
 
   return (
@@ -95,13 +134,22 @@ function App() {
         chats={chats}
         activeChatId={activeChatId}
         onNewChat={createNewChat}
-        onSwitchChat={switchChat}
+        onSwitchChat={setActiveChatId}
       />
       <div className="main">
         <ChatArea messages={messages} isLoading={isLoading} />
         <InputBox onSend={addMessage} isLoading={isLoading} />
       </div>
     </div>
+  )
+}
+
+function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<Landing />} />
+      <Route path="/chat" element={<Chat />} />
+    </Routes>
   )
 }
 

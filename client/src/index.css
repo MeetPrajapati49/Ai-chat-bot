@@ -177,3 +177,44 @@ body {
   color: #ffffff;
   border-left: 3px solid #7c6fff;
 }
+.landing {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0d0d14;
+}
+
+.landing-content {
+  text-align: center;
+}
+
+.landing-content h1 {
+  font-size: 48px;
+  font-weight: 900;
+  color: #ffffff;
+  margin-bottom: 16px;
+}
+
+.landing-content p {
+  font-size: 18px;
+  color: #7070a0;
+  margin-bottom: 32px;
+}
+
+.start-btn {
+  display: inline-block;
+  padding: 14px 32px;
+  background: #7c6fff;
+  color: #ffffff;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.start-btn:hover {
+  background: #6a5fdd;
+  transform: translateY(-2px);
+}
