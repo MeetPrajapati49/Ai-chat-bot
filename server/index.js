@@ -4,7 +4,7 @@ require('dotenv').config()
 
 const Groq = require('groq-sdk')
 
-const Chat = require('./models/Chat')
+// const Chat = require('./models/chat')
 
 const app = express()
 const PORT = process.env.PORT || 3000
