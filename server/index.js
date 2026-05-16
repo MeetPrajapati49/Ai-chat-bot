@@ -22,9 +22,17 @@ mongoose.connect(process.env.MONGODB_URI)
 
 
 
+const allowedOrigins = [
+  'http://localhost:5173',
+  process.env.CLIENT_URL // set this in Render to your Vercel URL
+].filter(Boolean)
+
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*')
-  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+  const origin = req.headers.origin
+  if (!origin || allowedOrigins.includes(origin) || allowedOrigins.some(o => o === '*')) {
+    res.header('Access-Control-Allow-Origin', origin || '*')
+  }
+  res.header('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS')
   res.header('Access-Control-Allow-Headers', 'Content-Type')
   if (req.method === 'OPTIONS') return res.sendStatus(200)
   next()
