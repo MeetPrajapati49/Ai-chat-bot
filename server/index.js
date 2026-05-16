@@ -1,6 +1,10 @@
+
 const express = require('express')
 require('dotenv').config()
+
 const Groq = require('groq-sdk')
+
+const Chat = require('./models/Chat')
 
 const app = express()
 const PORT = process.env.PORT || 3000
@@ -8,6 +12,15 @@ const PORT = process.env.PORT || 3000
 const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY
 })
+
+const mongoose = require('mongoose')
+
+// Connect to MongoDB
+mongoose.connect(process.env.MONGODB_URI)
+  .then(() => console.log('MongoDB connected! ✅'))
+  .catch(err => console.error('MongoDB error:', err))
+
+
 
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*')
@@ -65,6 +78,53 @@ app.post('/chat', async (req, res) => {
     res.status(500).json({ error: 'Something went wrong' })
   }
 })
+// Get all chats
+app.get('/chats', async (req, res) => {
+  try {
+    const chats = await Chat.find().sort({ createdAt: -1 })
+    res.json(chats)
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to get chats' })
+  }
+})
+
+// Create new chat
+app.post('/chats', async (req, res) => {
+  try {
+    const chat = new Chat({ title: 'New Chat', messages: [] })
+    await chat.save()
+    res.json(chat)
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to create chat' })
+  }
+})
+
+// Save message to chat
+app.post('/chats/:id/messages', async (req, res) => {
+  try {
+    const { text, isUser } = req.body
+    const chat = await Chat.findById(req.params.id)
+    chat.messages.push({ text, isUser })
+    if (chat.title === 'New Chat' && isUser) {
+      chat.title = text.slice(0, 25)
+    }
+    await chat.save()
+    res.json(chat)
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to save message' })
+  }
+})
+
+// Delete chat
+app.delete('/chats/:id', async (req, res) => {
+  try {
+    await Chat.findByIdAndDelete(req.params.id)
+    res.json({ success: true })
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete chat' })
+  }
+})
+
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`)

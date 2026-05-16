@@ -20,6 +20,7 @@ function Chatarea({ messages, isLoading }) {
           <span></span>
           <span></span>
           <span></span>
+         
         </div>
       )}
 

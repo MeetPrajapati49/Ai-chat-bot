@@ -1,9 +1,12 @@
 import { Routes, Route } from 'react-router-dom'
-import { useState } from 'react'
+import { useState ,useMemo } from 'react'
 import Landing from './pages/Landing'
 import Sidebar from './components/Sidebar'
-import ChatArea from './components/Chatarea'
+import Chatarea from './components/Chatarea'
 import InputBox from './components/InputBox'
+
+
+
 
 function Chat() {
   const [chats, setChats] = useState([
@@ -19,8 +22,9 @@ function Chat() {
   const [isLoading, setIsLoading] = useState(false)
   const [fileContext, setFileContext] = useState(null)
 
-  const activeChat = chats.find(c => c.id === activeChatId)
-  const messages = activeChat ? activeChat.messages : []
+ const activeChat = useMemo(() => 
+  chats.find(c => c.id === activeChatId)
+, [chats, activeChatId])
 
   async function addMessage(text, file) {
     let fileContent = null
@@ -73,8 +77,8 @@ function Chat() {
 
     try {
       // Build messages for Groq
-      let groqMessages = [
-        ...messages.map(msg => ({
+     let groqMessages = [
+  ...(activeChat?.messages || []).map(msg => ({
           role: msg.isUser ? 'user' : 'assistant',
           content: msg.text
         }))
@@ -116,6 +120,12 @@ function Chat() {
       setIsLoading(false)
     }
   }
+  function deleteChat(id){
+    setChats(chats.filter(c => c.id !== id))
+
+
+  }
+  
 
   function createNewChat() {
     const newChat = {
@@ -135,9 +145,10 @@ function Chat() {
         activeChatId={activeChatId}
         onNewChat={createNewChat}
         onSwitchChat={setActiveChatId}
+        onDeleteChat={deleteChat}
       />
       <div className="main">
-        <ChatArea messages={messages} isLoading={isLoading} />
+      <Chatarea messages={activeChat?.messages || []} isLoading={isLoading} />
         <InputBox onSend={addMessage} isLoading={isLoading} />
       </div>
     </div>

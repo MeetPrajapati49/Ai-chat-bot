@@ -4,6 +4,8 @@ return str.split('').reverse().join('')
 console.log(reverse("Meet"));
 console.log(reverse("Hello"));*/
 
+
+
 /*function isevenodd(number){
 
         if (number % 2 ==0){
@@ -52,16 +54,58 @@ console.log(countvowel("meet"))*/
 }
 
 fizzbuzz(15)*/
-/*function arrsum(arr){
-
-    return arr.reduce((total,num) => total + num ,0 )
-
-
+/*function fizzbuzz(n){
+    for (let i=1; i <=n ; i++  ){
+        if (i % 3 === 0 && i % 5 === 0){
+            console.log("fizzbuzz")
+        }
+        else if (i % 3 === 0){
+            console.log("Fizz")
+        }
+        else if (i % 5 === 0){
+            console.log("Buzz")
+        }
+         else {
+            console.log(i);
+        }
+    
+    }
+} 
+console.log(fizzbuzz([10]))*/
+/*function FilterEvenOdd(arr){
+  
+    return arr.filter(n => n % 2 === 0)
+    
+       
 }
-console.log(arrsum([1,2,3,4,5]))*/
-function findDuplicates(arr) {
-    return arr.filter((item, index) => 
-        arr.indexOf(item) !== index
-    )
-}
-console.log(findDuplicates([1,1,2,3,4,4,5,5]))
+console.log(FilterEvenOdd([1, 2, 3, 4, 5, 6]))
+*/
+//  function Reversestring(str){
+//     return(
+//         str.split('').reverse().join('').toUpperCase()
+
+//     )
+//  }
+//  console.log(Reversestring("hello"))
+
+// function Palindrom(str){
+   
+        
+//         if(str){
+//            let reversedStr = str.split('').reverse().join('').toLowerCase()
+           
+//              console.log(`Is '${str}' a palindrome? ${str.toLowerCase() === reversedStr}`);
+//         }
+
+
+
+// }
+// Palindrom('hello')
+// Palindrom('madam')
+
+// function flatten(arr){
+//         return arr.flat(Infinity)
+        
+        
+// }
+// console.log(flatten([1,2,[3,4],[5,6],[7]]))
