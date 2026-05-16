@@ -21,6 +21,7 @@ function Chat() {
   const [activeChatId, setActiveChatId] = useState(1)
   const [isLoading, setIsLoading] = useState(false)
   const [fileContext, setFileContext] = useState(null)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
  const activeChat = useMemo(() => 
   chats.find(c => c.id === activeChatId)
@@ -144,10 +145,18 @@ function Chat() {
         chats={chats}
         activeChatId={activeChatId}
         onNewChat={createNewChat}
-        onSwitchChat={setActiveChatId}
+        onSwitchChat={(id) => { setActiveChatId(id); setIsSidebarOpen(false); }}
         onDeleteChat={deleteChat}
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
       />
       <div className="main">
+        <div className="mobile-header">
+          <button className="menu-btn" onClick={() => setIsSidebarOpen(true)}>
+            ☰
+          </button>
+          <h2>NeuraChat</h2>
+        </div>
       <Chatarea messages={activeChat?.messages || []} isLoading={isLoading} />
         <InputBox onSend={addMessage} isLoading={isLoading} />
       </div>

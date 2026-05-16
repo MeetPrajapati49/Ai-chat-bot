@@ -1,23 +1,16 @@
 import { useTheme } from '../Context/ThemeContext'
 
-function Sidebar({ chats, activeChatId, onNewChat, onSwitchChat, onDeleteChat }) {
+function Sidebar({ chats, activeChatId, onNewChat, onSwitchChat, onDeleteChat, isOpen, onClose }) {
   const { isDark, toggleTheme } = useTheme()
 
-  const sidebarStyle = {
-    width: '260px',
-    height: '100vh',
-    background: isDark ? '#111118' : '#f0f0f5',
-    borderRight: `1px solid ${isDark ? '#2a2a3a' : '#ddd'}`,
-    padding: '20px',
-    flexShrink: 0,
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '8px'
-  }
-
   return (
-    <div style={sidebarStyle}>
-      <h2 style={{ color: isDark ? '#ffffff' : '#111' }}>NeuraChat</h2>
+    <>
+      {isOpen && <div className="sidebar-overlay" onClick={onClose}></div>}
+      <div className={`sidebar ${isDark ? 'dark' : 'light'} ${isOpen ? 'open' : ''}`}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h2 style={{ color: isDark ? '#ffffff' : '#111' }}>NeuraChat</h2>
+          <button className="close-sidebar-btn" onClick={onClose}>✕</button>
+        </div>
       
       <button className="new-chat-btn" onClick={onNewChat}>
         + New Chat
@@ -58,8 +51,8 @@ function Sidebar({ chats, activeChatId, onNewChat, onSwitchChat, onDeleteChat })
     </div>
   ))}
 </div>
-</div>
-    
+      </div>
+    </>
   )
 }
 
