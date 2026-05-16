@@ -1,7 +1,7 @@
-const connectDB = require('../../_lib/db')
-const Chat = require('../../_lib/chat')
+import connectDB from '../../_lib/db.js'
+import Chat from '../../_lib/chat.js'
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   // CORS
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', 'DELETE, OPTIONS')

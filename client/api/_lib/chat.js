@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+import mongoose from 'mongoose'
 
 const messageSchema = new mongoose.Schema({
   text: String,
@@ -13,4 +13,4 @@ const chatSchema = new mongoose.Schema({
 })
 
 // Prevent model re-compilation on warm invocations
-module.exports = mongoose.models.Chat || mongoose.model('Chat', chatSchema)
+export default mongoose.models.Chat || mongoose.model('Chat', chatSchema)

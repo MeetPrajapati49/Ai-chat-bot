@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+import mongoose from 'mongoose'
 
 // Cache connection across warm serverless invocations
 let cached = global._mongooseCache
@@ -18,4 +18,4 @@ async function connectDB() {
   return cached.conn
 }
 
-module.exports = connectDB
+export default connectDB
